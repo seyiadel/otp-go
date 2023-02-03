@@ -14,6 +14,6 @@ func main(){
 		panic("failed to connect to database")
 	}
 
-	otp.Generate(db,"qwerty@gmail.com",4) //Parameters: database, email, otp length
-
+	otp.Generate(db,"test@email.com",4) //Parameters: database, email, otp length
+	otp.ValidateOTP(db, "test@email.com", "8760")//Parameters: database, email, token
 	}

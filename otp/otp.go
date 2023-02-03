@@ -5,6 +5,8 @@ import (
 	"time"
 	"math/rand"
 	"strings"
+	"os"
+
 	"gorm.io/gorm"
 )
 
@@ -15,10 +17,12 @@ type OtpModel struct{
 	Token	string	
 }
 
-func validateEmail(email string)bool{
+func validateEmail(email string)(bool){
 	err := strings.Contains(email, "@")
 	if !err{
-		panic("add a valid email address.")
+		fmt.Println("add a valid email address.")	
+		os.Exit(1)
+		
 	 }
 	return err
 }
@@ -36,10 +40,12 @@ func Generate(db *gorm.DB, userEmail string, otpLength int)(token string, err er
 		}).Error
 	
 	if err != nil{
+		os.Exit(1)
 		return
 	}
-
+	
 	return
+
 }
 
 func generateOTP(otp_length int)(string){
@@ -54,4 +60,18 @@ func generateOTP(otp_length int)(string){
 		otp += generatedOtp
 	}
 	return otp
+}
+
+func ValidateOTP(db *gorm.DB, userEmail string, token string)(err error){
+	var foundOTP OtpModel
+
+	validateEmail(userEmail)
+
+
+	err = db.Model(OtpModel{}).Where("user_email = ?", userEmail).Where("token = ?", token).Find(&foundOTP).Error
+	if err !=  nil{
+		return 
+	}
+	fmt.Printf("%s One Time Password Validated ", userEmail)
+	return 
 }
